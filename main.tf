@@ -1,5 +1,5 @@
 provider "aws" {
-  region = "ca-central-1"
+  region     = "ca-central-1"
   access_key = ""
   secret_key = ""
 }
@@ -51,7 +51,7 @@ module "rs-rt-subnet-association-1" {
 
   rt_id     = module.vpc-igw-rt.instance_id
   subnet_id = module.rs-subnet-1.instance_id
-  
+
 }
 
 //4.b. Route Table - Subnet association
@@ -148,7 +148,7 @@ resource "aws_lb_listener" "rs-alb-web-listener" {
 
   default_action {
     target_group_arn = aws_lb_target_group.rs-alb-tg.arn
-    type = "forward"
+    type             = "forward"
   }
 }
 
@@ -160,7 +160,7 @@ module "rs-asg" {
   subnet2_id = module.rs-subnet-2.instance_id
 
   //launch_template_id = module.rs-asg-lt.instance_id
-    launch_config_name = module.rs-asg-lc.instance.name
+  launch_config_name = module.rs-asg-lc.instance.name
 }
 
 resource "aws_autoscaling_attachment" "rs-asg_attachment" {
@@ -168,6 +168,24 @@ resource "aws_autoscaling_attachment" "rs-asg_attachment" {
   alb_target_group_arn   = aws_lb_target_group.rs-alb-tg.arn
 }
 
+resource "aws_autoscaling_policy" "rs_asg_target_tracking_policy" {
+  name                      = "rs-asg-alb-target-tracking-policy"
+  policy_type               = "TargetTrackingScaling"
+  autoscaling_group_name    = module.rs-asg.instance.name
+  estimated_instance_warmup = 200
+
+  target_tracking_configuration {
+    predefined_metric_specification {
+      predefined_metric_type = "ALBRequestCountPerTarget"
+      resource_label = "${module.rs-alb.instance.arn_suffix}/${aws_lb_target_group.rs-alb-tg.arn_suffix}"
+    }
+    target_value = "3"
+  }
+}
+
+//ALBRequestCountPerTarget, ALBTargetGroupRequestCount
+
+// for debugging purposes
 output "vpc_instance" {
   value = module.rs-main-vpc.instance_id
 }

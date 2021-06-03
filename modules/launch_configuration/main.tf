@@ -5,7 +5,7 @@ locals {
               yum update -y
               yum install httpd -y
               systemctl start httpd
-              echo <html><body>Syed Iqbal Web Server - $host </body></html> > /var/www/html/index.html
+              echo Syed Iqbal Web Server - $host > /var/www/html/index.html
               EOF
 }
 
