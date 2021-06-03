@@ -13,7 +13,10 @@ resource "aws_autoscaling_group" "rs-asg" {
     var.subnet2_id
   ]
 
-  launch_template {
-    id      = var.launch_template_id
-  }
+    launch_configuration = var.launch_config_name
+
+
+  # launch_template {
+  #   id      = var.launch_template_id
+  # }
 }

@@ -1,4 +1,8 @@
-variable "launch_template_id" {
+# variable "launch_template_id" {
+#   type = string
+# }
+
+variable "launch_config_name" {
   type = string
 }
 

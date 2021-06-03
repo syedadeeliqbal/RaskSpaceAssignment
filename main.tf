@@ -1,7 +1,7 @@
 provider "aws" {
   region = "ca-central-1"
-  access_key = "AKIAQYGIPTGSVCDNLV37"
-  secret_key = "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"
+  access_key = "AKIAY7OQN23IYLZFG735"
+  secret_key = "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"
 }
 
 // 1. Create VPC
@@ -51,6 +51,7 @@ module "rs-rt-subnet-association-1" {
 
   rt_id     = module.vpc-igw-rt.instance_id
   subnet_id = module.rs-subnet-1.instance_id
+  
 }
 
 //4.b. Route Table - Subnet association
@@ -98,9 +99,17 @@ resource "aws_security_group_rule" "rs-sg-rule" {
   security_group_id        = aws_security_group.rs-ec2-sg.id
 }
 
-//6. Launch Template
-module "rs-asg-lt" {
-  source = "./modules/launch_template"
+# //6. Launch Template
+# module "rs-asg-lt" {
+#   source = "./modules/launch_template"
+
+#   security_group_id = aws_security_group.rs-ec2-sg.id
+#   subnet_id         = module.rs-subnet-1.instance_id
+# }
+
+//6. Launch Configuration
+module "rs-asg-lc" {
+  source = "./modules/launch_configuration"
 
   security_group_id = aws_security_group.rs-ec2-sg.id
   subnet_id         = module.rs-subnet-1.instance_id
@@ -150,7 +159,8 @@ module "rs-asg" {
   subnet1_id = module.rs-subnet-1.instance_id
   subnet2_id = module.rs-subnet-2.instance_id
 
-  launch_template_id = module.rs-asg-lt.instance_id
+  //launch_template_id = module.rs-asg-lt.instance_id
+    launch_config_name = module.rs-asg-lc.instance.name
 }
 
 resource "aws_autoscaling_attachment" "rs-asg_attachment" {
@@ -160,4 +170,8 @@ resource "aws_autoscaling_attachment" "rs-asg_attachment" {
 
 output "vpc_instance" {
   value = module.rs-main-vpc.instance_id
+}
+
+output "alb_instance" {
+  value = module.rs-alb.instance
 }
