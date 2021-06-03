@@ -1,3 +1,3 @@
 output "instance" {
-    value = aws_autoscaling_group.rs-asg
+  value = aws_autoscaling_group.rs-asg
 }

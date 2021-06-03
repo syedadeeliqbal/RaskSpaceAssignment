@@ -1,10 +1,8 @@
-
-
 variable "cidr" {
-  type = string
+  type        = string
   description = "CIDR Block"
 }
 
 variable "tag" {
-  default = "RackSpace Assignment"
+  default = "RackSpace Assignment - VPC"
 }

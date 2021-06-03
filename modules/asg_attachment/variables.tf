@@ -1,7 +1,7 @@
 variable "asg_name" {
-    type = string  
+  type = string
 }
 
 variable "type_group_arn" {
-    type = string  
+  type = string
 }

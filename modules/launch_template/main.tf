@@ -1,13 +1,4 @@
-# locals {
-#   user_data = <<-EOT
-#               #!/bin/bash
-#               host=$(hostname)
-#               apt update -y
-#               apt install apache2 -y
-#               systemctl start apache2
-#               echo <html><body>Syed Iqbal  web server - $host</body></html>  > /var/www/html/index.html
-#               EOT
-# }
+// Commented because Launch Templates were not allowed by RS
 
 # locals {
 # user_data = <<-EOF

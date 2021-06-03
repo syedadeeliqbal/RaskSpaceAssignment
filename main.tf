@@ -51,7 +51,6 @@ module "rs-rt-subnet-association-1" {
 
   rt_id     = module.vpc-igw-rt.instance_id
   subnet_id = module.rs-subnet-1.instance_id
-
 }
 
 //4.b. Route Table - Subnet association
@@ -163,33 +162,24 @@ module "rs-asg" {
   launch_config_name = module.rs-asg-lc.instance.name
 }
 
-resource "aws_autoscaling_attachment" "rs-asg_attachment" {
-  autoscaling_group_name = module.rs-asg.instance.id
-  alb_target_group_arn   = aws_lb_target_group.rs-alb-tg.arn
+//11. Attach the ASG to the Target Group
+module "rs_autoscale_attachment" {
+  source = "./modules/asg_attachment"
+
+  asg_name       = module.rs-asg.instance.id
+  type_group_arn = aws_lb_target_group.rs-alb-tg.arn
 }
 
-resource "aws_autoscaling_policy" "rs_asg_target_tracking_policy" {
-  name                      = "rs-asg-alb-target-tracking-policy"
-  policy_type               = "TargetTrackingScaling"
-  autoscaling_group_name    = module.rs-asg.instance.name
-  estimated_instance_warmup = 200
+//12. Setup an Autoscale policy to scale up and scale down
+module "rs_asg_autoscale_policy" {
+  source = "./modules/autoscale_policy"
 
-  target_tracking_configuration {
-    predefined_metric_specification {
-      predefined_metric_type = "ALBRequestCountPerTarget"
-      resource_label = "${module.rs-alb.instance.arn_suffix}/${aws_lb_target_group.rs-alb-tg.arn_suffix}"
-    }
-    target_value = "3"
-  }
+  asg_name       = module.rs-asg.instance.name
+  alb_arn_suffix = module.rs-alb.instance.arn_suffix
+  tg_arn_suffix  = aws_lb_target_group.rs-alb-tg.arn_suffix
 }
-
-//ALBRequestCountPerTarget, ALBTargetGroupRequestCount
 
 // for debugging purposes
-output "vpc_instance" {
-  value = module.rs-main-vpc.instance_id
-}
-
 output "alb_instance" {
   value = module.rs-alb.instance
 }

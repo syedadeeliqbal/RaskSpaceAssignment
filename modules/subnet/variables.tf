@@ -15,5 +15,5 @@ variable "name" {
 }
 
 variable "tag" {
-  default = "RackSpace Assignment"
+  default = "RackSpace Assignment - Subnet"
 }
